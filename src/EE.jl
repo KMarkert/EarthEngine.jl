@@ -7,7 +7,8 @@ using Lazy
 import Base: 
     length, keys, contains, split, 
     replace, lowercase, string, filter, 
-    union, size, identity, map
+    union, size, identity, map, first,
+    get
 
 
 const module_dir = @__DIR__
