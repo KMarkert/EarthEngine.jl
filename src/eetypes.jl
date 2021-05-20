@@ -13,6 +13,9 @@ types = [
     :Filter,
     :Geometry,
     :Dictionary,
+    :Element,
+    :ComputedObject,
+    :Collection
 ]
 
 for type in types
