@@ -1,16 +1,6 @@
 # primitive types = :ComputedObject, :Element, :Collection
 # do not touch primitives, creating using @pytype usually results in unexpected behavior
 
-# primitives = [
-
-# ]
-
-# for primitive in primitives
-#     @eval begin
-#         @primitivepytype $(primitive) ()->ee.$(primitive)
-#     end
-# end
-
 types = [
     :ComputedObject,
     :Element,
