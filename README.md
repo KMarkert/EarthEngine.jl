@@ -11,7 +11,7 @@ You can use `EE.jl` in the following two ways.
 1. Interface with the good ole' object-oriented Python API that everyone knows and loves through Julia (i.e. `imagecollection.filterDate(...).mean()`)
 2. Interface with EarthEngine using with Julia-like syntax that leverages types and multiple dispacthing (i.e. `(mean(filterDate(imagecollection,...)))`).
 
-See the `Usage` section of the documentation for more details on how to use.
+See the [Usage page](https://kmarkert.github.io/EE.jl/dev/usage/) of the documentation for more details on how to use.
 
 ## Why Julia + EE?
 
@@ -85,7 +85,7 @@ The results should look like the following figure:
 
 ## 🚨 Warning 🚨
 
-**This package is in development and should not be used for production services!** This is more of a proof of concept in using the EarthEngine API with type definitions, which Julia provides. There may be some unexpected behavior with the conversion of types from the EE Python API to Julia, see the [Quirks section] of the documentation to learn more.
+**This package is in development and should not be used for production services!** This is more of a proof of concept in using the EarthEngine API with type definitions, which Julia provides. There may be some unexpected behavior with the conversion of types from the EE Python API to Julia, see the [Quirks section](https://kmarkert.github.io/EE.jl/dev/usage/#Quirks) of the documentation to learn more.
 
 There are most likely function definitions that clobber with the Julia Base definitions so if you come across any issues, please log an [issue of Github](https://github.com/KMarkert/EE.jl/issues) so that it can be resolved.
 
