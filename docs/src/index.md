@@ -29,12 +29,12 @@ julia> using Conda
 julia> Conda.add("earthengine-api",channel="conda-forge");
 ```
 
-Now we can install the EE package.
+Now we can install the EE package. The EE.jl package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
 
 ```julia
 $ julia
 julia> ]
-pkg> add EE
+pkg> add https://github.com/Kmarkert/EE.jl
 julia> using EE
 ```
 
