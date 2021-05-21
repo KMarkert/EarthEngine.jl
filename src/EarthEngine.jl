@@ -1,6 +1,6 @@
 __precompile__(true)
 
-module EE
+module EarthEngine
 
 using PyCall
 import Base: 
