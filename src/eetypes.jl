@@ -1,7 +1,20 @@
 # primitive types = :ComputedObject, :Element, :Collection
-# do not touch primitives, usually result in unexpected behavior
+# do not touch primitives, creating using @pytype usually results in unexpected behavior
+
+# primitives = [
+
+# ]
+
+# for primitive in primitives
+#     @eval begin
+#         @primitivepytype $(primitive) ()->ee.$(primitive)
+#     end
+# end
 
 types = [
+    :ComputedObject,
+    :Element,
+    :Collection,
     :Number,
     :String,
     :Image,
@@ -13,9 +26,7 @@ types = [
     :Filter,
     :Geometry,
     :Dictionary,
-    :Element,
-    :ComputedObject,
-    :Collection
+
 ]
 
 for type in types

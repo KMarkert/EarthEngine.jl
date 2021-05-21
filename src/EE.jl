@@ -3,12 +3,11 @@ __precompile__(true)
 module EE
 
 using PyCall
-using Lazy
 import Base: 
     length, keys, contains, split, 
     replace, lowercase, string, filter, 
     union, size, identity, map, first,
-    get
+    get, repeat
 
 
 const module_dir = @__DIR__
@@ -38,6 +37,11 @@ abstract type EEWrapped end
 
 PyCall.PyObject(x::EEWrapped) = x.pyo
 
+"""
+    @pytype name class
+
+Macro for creating a Julia Type that wraps a PyObject class
+"""
 macro pytype(name, class)
     quote
         struct $(name) <: EEWrapped
@@ -65,6 +69,11 @@ macro pytype(name, class)
     end
 end
 
+"""
+    ee_wrap(pyo::PyObject)
+
+Function for wrapping a Python object defined in the type map
+"""
 function ee_wrap(pyo::PyObject)
     for (pyt, pyv) in type_map
         pyt === nothing && continue
@@ -86,6 +95,13 @@ fix_arg(x) = x
 
 pyattr(class, method) = pyattr(class, method, method)
 
+
+"""
+    pyattr(class method orig_method)
+
+Function for creating a method signature for a Julia Type
+In Python world method(T::class) is analagous to class.method()
+"""
 function pyattr(class, jl_method, py_method)
     quote
         function $(esc(jl_method))(pyt::$class, args...; kwargs...)
@@ -97,16 +113,33 @@ function pyattr(class, jl_method, py_method)
     end
 end
 
+
+"""
+    @pyattr class method
+
+Macro for creating a method signature for a Julia Type
+In Python world method(T::class) is analagous to class.method()
+"""
 macro pyattr(class, method)
     pyattr(class, method)
 end
 
+
+"""
+    @pyattr class method orig_method
+
+Macro for creating a method signature for a Julia Type
+In Python world method(T::class) is analagous to class.method()
+This will create a new method name which calls the orig_method
+"""
 macro pyattr(class, method, orig_method)
     pyattr(class, method, orig_method)
 end
 
+
 """
     pyattr_set(types, methods...)
+
 For each Julia type `T<:EEWrapped` in `types` and each method `m` in `methods`,
 define a new function `m(t::T, args...)` that delegates to the underlying
 pyobject wrapped by `t`.
@@ -121,6 +154,13 @@ end
 
 const ee_exports = []
 
+"""
+    Initialize()
+
+Function to initialize an EarthEngine session (analagous to ee.Initialize() from
+the Python API). This function also dynamically builds the EE API and creates the
+methods with signatures for each EE Type.
+"""
 function Initialize(args...; kwargs...)    
     try
         ee.Initialize(args...; kwargs...)
@@ -128,6 +168,7 @@ function Initialize(args...; kwargs...)
         error("Could not initialize an `ee` session. Please try authenticating the earthengine-api.")
     end
     
+    # pull in the types and dynamically wrap things after initialization
     include("$(module_dir)/eepsuedotypes.jl")
     include("$(module_dir)/eefuncs.jl") 
 
@@ -136,6 +177,13 @@ function Initialize(args...; kwargs...)
     end
 end
 
+"""
+    Authenticate()
+
+Function to execute the EarthEngine authetication workflow (analgous to 
+ee.Authenticate() in the Python API). This function should only be executed
+once if the EE API has not be used before.
+"""
 function Authenticate(args...; kwargs...)
     try
         ee.Autheticate(args...; kwargs...)
@@ -145,6 +193,7 @@ function Authenticate(args...; kwargs...)
 end
 
 include("eetypes.jl")
+
 
 export ee, Initialize, Authenticate
 
