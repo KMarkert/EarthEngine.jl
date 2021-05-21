@@ -2,6 +2,8 @@
 
 Google Earth Engine in Julia!
 
+![logo](docs/src/assets/logo-small.png)
+
 `EE.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language. This 
 
 You can use `EE.jl` in the following two ways.
