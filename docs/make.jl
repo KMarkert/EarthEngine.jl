@@ -23,6 +23,6 @@ makedocs(;
 
 deploydocs(; 
     deps = Deps.pip("earthengine-api"),
-    repo = "github.com/KMarkert/EE.jl.git",
+    repo = "github.com/KMarkert/EarthEngine.jl.git",
     devbranch = "main"
 )
