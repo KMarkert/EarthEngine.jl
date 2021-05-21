@@ -2,13 +2,23 @@
 
 This document serves to illustrate and discuss some of the internals and interesting bits when using the `EE.jl` Julia API. 
 
-The Julia API imports all of the functions from 
+The Julia API imports the majority of the functions from the Python API (currently missing the modules in `ee.Algorithms`...). The functions lose the `ee.Type` syntax so the one can simply call the methods by name and not have as much code. For example `ee.Reducer.histogram()` is simply `histogram()` in the Julia API. There are multiple versions of some methods depending on the ee.Type (like `mean()`) and the differences get handled by Julia's multiple dispatch, see [Leveraging Julia's multiple distpatch](#Leveraging-Julia's-multiple-distpatch) section for details.
+
+Another notable difference is how methods are called. For example, if you would like to filter an ImageCollection and then reduce an Image, the syntax changes from `imagecollection.filterDate(start,end).mean()` to `mean(filterDate(imagecollection, start, end))`. This makes the syntax more like native Julia syntax and not object oriented. If you like the Python API of interfacing with EE or want to easily convert your Python code to Julia, then see the [Using the Python API through Julia section](#Using-the-Python-API-through-Julia).
 
 ## EE Types
 
-One nice feature of  Julia is that it supports [types](https://docs.julialang.org/en/v1/manual/types/). This allows for defining [type safe](https://en.wikipedia.org/wiki/Type_safety) functions. 
+One nice feature of  Julia is that it supports [types](https://docs.julialang.org/en/v1/manual/types/). This allows for easily creating user defined fucntions and code that are [type safe](https://en.wikipedia.org/wiki/Type_safety). 
 
 The Julia types are are one-to-one mapping of the Earth Engine types such as Image, Feature, etc. One can access EE types using the following code: `EE.Image` (note the capitalized EE). These types are not to be confused with `ee.Image` which is the original Python object.
+
+```julia
+typeof(ee.Image)
+# returns PyCall.PyObject
+
+typeof(EE.Image)
+# returns DataType
+```
 
 Consider the following example where we define a function that takes an `EE.Image` type as an input and returns an `EE.Image` type. This function will return an error if provided any other variable with a type that is not an `EE.Image`. Here is the following code:
 
@@ -81,7 +91,7 @@ methods(ndvi)
 # [4] ndvi(f) in Main at REPL[XX]:2
 ```
 
-If you are interested in learning more about mulitple dispatch, then pleae see the following presentation, [The Unreasonable Effectiveness of Multiple Dispatch](https://www.youtube.com/watch?v=kc9HwsxE1OY) by Stefan Karpinski.
+If you are interested in learning more about mulitple dispatch, then pleae see the following presentation: [The Unreasonable Effectiveness of Multiple Dispatch](https://www.youtube.com/watch?v=kc9HwsxE1OY) by Stefan Karpinski.
 
 ## Quirks
 
@@ -145,10 +155,11 @@ There are more likely than not more quirks in using the EE API this way, if ther
 
 ## Using the Python API through Julia
 
-The `EE.jl` package also exposes the `ee` Python module so one can use the same code as one would when programming in Python. See the follwowing example to access the Python API from Julia:
+The `EE.jl` package also exposes the `ee` Python module so one can use the same code as one would when programming in Python. See the following example of valid Julia and Python code:
 
 ```julia
 # import the EE package and initialize an ee session
+# this is the only non-Python
 using EE
 Initialize()
 
@@ -160,4 +171,4 @@ println(value.getInfo())
 # 8729 
 ```
 
-Accessing the EE API this was is *an exact* match to the Python API so one can simply copy-paste whatever Python code they have using the `ee` module and it will work with this Julia API.
+Accessing the EE API this way is *an exact* match to the Python API so one can simply copy-paste whatever Python code you have using the `ee` module and it will work with this Julia API.

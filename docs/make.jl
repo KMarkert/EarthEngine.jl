@@ -21,4 +21,7 @@ makedocs(;
     pages = pages,
 )
 
-# deploydocs(; repo = "github.com/KMarkert/EE.jl")
+deploydocs(; 
+    deps = Deps.pip("earthengine-api"),
+    repo = "github.com/KMarkert/EE.jl.git"
+)
