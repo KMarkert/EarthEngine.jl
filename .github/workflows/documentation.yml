@@ -17,6 +17,7 @@ jobs:
           version: '1.4'
       - name: Install dependencies
         run: julia --project=docs/ -e 'using Pkg; Pkg.add("Documenter"); Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate();'
+      - name: Install earthengine-api
         run: pip install earthengine-api
       - name: Build and deploy
         # env:
