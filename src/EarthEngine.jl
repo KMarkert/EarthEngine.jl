@@ -162,7 +162,7 @@ the Python API). Accepts arguments and keywords from the Python ee.Initialize()
 function. This function also dynamically builds the EE API and creates the methods 
 with signatures for each EE Type.
 """
-function initialize(args...; kwargs...)    
+function Initialize(args...; kwargs...)    
     try
         ee.Initialize(args...; kwargs...)
     catch err
@@ -185,7 +185,7 @@ Function to execute the EarthEngine authetication workflow (analgous to
 ee.Authenticate() in the Python API). This function should only be executed
 once if the EE API has not be used before.
 """
-function authenticate(args...; kwargs...)
+function Authenticate(args...; kwargs...)
     try
         ee.Autheticate(args...; kwargs...)
     catch err
