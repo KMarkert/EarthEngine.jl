@@ -49,7 +49,7 @@ To get started illustrating how to execute EE workflows using Julia, some of the
 The first example is focused on importing the packing and performing a small geospatial process. Here the SRTM elevation data is imported and queried at the geospatial coordinates of Mount Everest to get the elevation value.
 
 ```julia
-using EE
+using EarthEngine
 Initialize()
 dem = EE.Image("USGS/SRTMGL1_003");
 xy = Point(86.9250, 27.9881);
@@ -64,7 +64,7 @@ As a more extensive example, we will sample data from a raster dataset. This is 
 
 ```julia
 using Plots
-using EE
+using EarthEngine
 Initialize()
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913");
 band_names = ["B3","B4"]
@@ -87,7 +87,7 @@ This next example is a common workflow to calculate NDVI from a Landsat 5 image.
 
 ```julia
 using Plots, Colors, FileIO
-using EE
+using EarthEngine
 Initialize()
 
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")

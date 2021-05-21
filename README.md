@@ -52,7 +52,7 @@ The first example is focused on importing the packing and performing a small geo
 
 ```julia
 using EarthEngine
-initialize()
+Initialize()
 dem = EE.Image("USGS/SRTMGL1_003");
 xy = Point(86.9250, 27.9881);
 value = get(first(sample(dem,xy,30)),"elevation")
@@ -67,7 +67,7 @@ As a more extensive example, we will sample data from a raster dataset. This is 
 ```julia
 using Plots
 using EarthEngine
-initialize()
+Initialize()
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913");
 band_names = ["B3","B4"]
 samples_fc = sample(divide(select(img,band_names),10000);scale=30,numPixels=500)
@@ -88,8 +88,8 @@ This next example is a common workflow to calculate NDVI from a Landsat 5 image.
 
 ```julia
 using Plots, Colors, FileIO
-using EE
-initialize()
+using EarthEngine
+Initialize()
 
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
 

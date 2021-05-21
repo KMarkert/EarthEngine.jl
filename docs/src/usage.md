@@ -162,10 +162,10 @@ There are more likely than not more quirks in using the EE API this way, if ther
 The `EarthEngine.jl` package also exposes the `ee` Python module so one can use the same code as one would when programming in Python. See the following example of valid Julia and Python code:
 
 ```julia
-# import the EE package and initialize an ee session
+# import the EE package and Initialize an ee session
 # this is the only non-Python
-using EE
-Initialize()
+using EarthEngine
+ee.Initialize()
 
 # now we can access the `ee` module like we would with Python
 dem = ee.Image("USGS/SRTMGL1_003");
