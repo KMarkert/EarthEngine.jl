@@ -24,4 +24,32 @@ sample_data = getInfo(get(sample_cols,&quot;list&quot;))
 
 # plot the results
 theme(:bright)
-scatter(sample_data[1,:],sample_data[2,:],markersize=4,alpha=0.6,xlabel=&quot;Red&quot;,ylabel=&quot;NIR&quot;,leg=false)</code></pre><p>The results should look like the following figure:</p><p><img src="assets/example_scatterplot.png" alt="example_scatterplot"/></p><h2 id="Acknowlegments"><a class="docs-heading-anchor" href="#Acknowlegments">Acknowlegments</a><a id="Acknowlegments-1"></a><a class="docs-heading-anchor-permalink" href="#Acknowlegments" title="Permalink"></a></h2><ul><li>This package is heavily influenced by many of the great develop resources by the Earth Engine community such as <a href="https://github.com/r-spatial/rgee/">rgee</a> and other packages in the <a href="https://github.com/gee-community/">Google Earth Engine Community Org</a></li><li><em>A lot</em> of code was reused from <a href="https://github.com/JuliaPy/Pandas.jl">Pandas.jl</a> which illustrates how to wrap Python objects in Julia.</li></ul></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="usage/">Usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 21 May 2021 18:30">Friday 21 May 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+scatter(sample_data[1,:],sample_data[2,:],markersize=4,alpha=0.6,xlabel=&quot;Red&quot;,ylabel=&quot;NIR&quot;,leg=false)</code></pre><p>The results should look like the following figure:</p><p><img src="assets/example_scatterplot.png" alt="example_scatterplot"/></p><h3 id="Image-processing-and-visualization"><a class="docs-heading-anchor" href="#Image-processing-and-visualization">Image processing and visualization</a><a id="Image-processing-and-visualization-1"></a><a class="docs-heading-anchor-permalink" href="#Image-processing-and-visualization" title="Permalink"></a></h3><p>This next example is a common workflow to calculate NDVI from a Landsat 5 image. For this example we define a function, apply it to the image, and pull the results for visualization.</p><pre><code class="language-julia">using Plots, Colors, FileIO
+using EE
+Initialize()
+
+img = EE.Image(&quot;LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913&quot;)
+
+function ndvi(img::EE.Image)
+    return normalizedDifference(img, [&quot;B4&quot;,&quot;B3&quot;])
+end
+
+ndvi_img = ndvi(img)
+
+color_map = map(x -&gt; hex(x,:RRGGBB), cgrad(:Greens_9));
+
+thumburl = getThumbUrl(
+    ndvi_img, 
+    Dict(
+        &quot;min&quot; =&gt; 0,
+        &quot;max&quot; =&gt; 0.8,
+        &quot;dimensions&quot; =&gt; 1024,
+        &quot;palette&quot; =&gt; color_map,
+        &quot;format&quot; =&gt; &quot;png&quot;,
+    )
+)
+localpath = download(thumburl)
+
+png = FileIO.load(localpath);
+
+plot(png, ticks = nothing, border = :none)</code></pre><p>The results should look like the following image:</p><p><img src="assets/example_ndvi.png" alt="example_ndvi"/></p><h2 id="Acknowlegments"><a class="docs-heading-anchor" href="#Acknowlegments">Acknowlegments</a><a id="Acknowlegments-1"></a><a class="docs-heading-anchor-permalink" href="#Acknowlegments" title="Permalink"></a></h2><ul><li>This package is heavily influenced by many of the great develop resources by the Earth Engine community such as <a href="https://github.com/r-spatial/rgee/">rgee</a> and other packages in the <a href="https://github.com/gee-community/">Google Earth Engine Community Org</a></li><li><em>A lot</em> of code was reused from <a href="https://github.com/JuliaPy/Pandas.jl">Pandas.jl</a> which illustrates how to wrap Python objects in Julia.</li></ul></article><nav class="docs-footer"><a class="docs-footer-nextpage" href="usage/">Usage »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Friday 21 May 2021 20:24">Friday 21 May 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
