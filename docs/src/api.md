@@ -13,21 +13,21 @@ Authenticate()
 ```
 
 ```@docs
-EE.ee_wrap
+EarthEngine.ee_wrap
 ```
 
 ```@docs
-EE.pyattr
+EarthEngine.pyattr
 ```
 
 ```@docs
-EE.@pytype
+EarthEngine.@pytype
 ```
 
 ```@docs
-EE.pyattr_set
+EarthEngine.pyattr_set
 ```
 
 ```@docs
-EE.@pyattr 
+EarthEngine.@pyattr 
 ```
