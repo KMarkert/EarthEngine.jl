@@ -81,6 +81,46 @@ The results should look like the following figure:
 
 ![example_scatterplot](assets/example_scatterplot.png)
 
+### Image processing and visualization
+
+This next example is a common workflow to calculate NDVI from a Landsat 5 image. For this example we define a function, apply it to the image, and pull the results for visualization.
+
+```julia
+using Plots, Colors, FileIO
+using EE
+Initialize()
+
+img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
+
+function ndvi(img::EE.Image)
+    return normalizedDifference(img, ["B4","B3"])
+end
+
+ndvi_img = ndvi(img)
+
+color_map = map(x -> hex(x,:RRGGBB), cgrad(:Greens_9));
+
+thumburl = getThumbUrl(
+    ndvi_img, 
+    Dict(
+        "min" => 0,
+        "max" => 0.8,
+        "dimensions" => 1024,
+        "palette" => color_map,
+        "format" => "png",
+    )
+)
+localpath = download(thumburl)
+
+png = FileIO.load(localpath);
+
+plot(png, ticks = nothing, border = :none)
+```
+
+The results should look like the following image:
+
+![example_ndvi](assets/example_ndvi.png)
+
 ## Acknowlegments
 
  * This package is heavily influenced by many of the great develop resources by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)

@@ -83,6 +83,46 @@ The results should look like the following figure:
 
 ![example_scatterplot](docs/src/assets/example_scatterplot.png)
 
+
+This next example is a common workflow to calculate NDVI from a Landsat 5 image. For this example we define a function, apply it to the image, and pull the results for visualization.
+
+```julia
+using Plots, Colors, FileIO
+using EE
+Initialize()
+
+img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
+
+function ndvi(img::EE.Image)
+    return normalizedDifference(img, ["B4","B3"])
+end
+
+ndvi_img = ndvi(img)
+
+color_map = map(x -> hex(x,:RRGGBB), cgrad(:Greens_9));
+
+thumburl = getThumbUrl(
+    ndvi_img, 
+    Dict(
+        "min" => 0,
+        "max" => 0.8,
+        "dimensions" => 1024,
+        "palette" => color_map,
+        "format" => "png",
+    )
+)
+localpath = download(thumburl)
+
+png = FileIO.load(localpath);
+
+plot(png, ticks = nothing, border = :none)
+```
+
+The results should look like the following image:
+
+![example_ndvi](docs/src/assets/example_ndvi.png)
+
+
 ## 🚨 Warning 🚨
 
 **This package is in development and should not be used for production services!** This is more of a proof of concept in using the EarthEngine API with type definitions, which Julia provides. There may be some unexpected behavior with the conversion of types from the EE Python API to Julia, see the [Quirks section](https://kmarkert.github.io/EE.jl/dev/usage/#Quirks) of the documentation to learn more.
