@@ -11,7 +11,7 @@ pages = [
 makedocs(;
     modules = [EarthEngine],
     authors = "Kel Markert",
-    repo = "https://github.com/KMarkert/EE.jl/blob/{commit}{path}#L{line}",
+    repo = "https://github.com/KMarkert/EarthEngine.jl/blob/{commit}{path}#L{line}",
     sitename = "EarthEngine.jl",
     # format = Documenter.HTML(;
     #     prettyurls = get(ENV, "CI", "false") == "true",
