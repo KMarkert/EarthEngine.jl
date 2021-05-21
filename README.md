@@ -1,4 +1,4 @@
-# EE.jl
+# EarthEngine.jl
 
 Google Earth Engine in Julia!
 
@@ -6,7 +6,7 @@ Google Earth Engine in Julia!
 
 `EE.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
 
-You can use `EE.jl` in the following two ways.
+You can use `EarthEngine.jl` in the following two ways.
 
 1. Interface with the good ole' object-oriented Python API that everyone knows and loves through Julia (i.e. `imagecollection.filterDate(...).mean()`)
 2. Interface with EarthEngine using with Julia-like syntax that leverages types and multiple dispacthing (i.e. `(mean(filterDate(imagecollection,...)))`).
@@ -37,7 +37,7 @@ Now we can install the EE package. The EE.jl package is currently going through 
 $ julia
 julia> ]
 pkg> add https://github.com/Kmarkert/EE.jl
-julia> using EE
+julia> using EarthEngine
 ```
 
 If everything went well then you should have been able to import the EE package without any errors.
@@ -51,8 +51,8 @@ To get started illustrating how to execute EE workflows using Julia, some of the
 The first example is focused on importing the packing and performing a small geospatial process. Here the SRTM elevation data is imported and queried at the geospatial coordinates of Mount Everest to get the elevation value.
 
 ```julia
-using EE
-Initialize()
+using EarthEngine
+initialize()
 dem = EE.Image("USGS/SRTMGL1_003");
 xy = Point(86.9250, 27.9881);
 value = get(first(sample(dem,xy,30)),"elevation")
@@ -66,8 +66,8 @@ As a more extensive example, we will sample data from a raster dataset. This is 
 
 ```julia
 using Plots
-using EE
-Initialize()
+using EarthEngine
+initialize()
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913");
 band_names = ["B3","B4"]
 samples_fc = sample(divide(select(img,band_names),10000);scale=30,numPixels=500)
@@ -89,7 +89,7 @@ This next example is a common workflow to calculate NDVI from a Landsat 5 image.
 ```julia
 using Plots, Colors, FileIO
 using EE
-Initialize()
+initialize()
 
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
 

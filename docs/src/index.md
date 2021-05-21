@@ -1,10 +1,10 @@
-# EE.jl
+# EarthEngine.jl
 
 Google Earth Engine in Julia!
 
-`EE.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
+`EarthEngine.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
 
-You can use `EE.jl` in the following two ways.
+You can use `EarthEngine.jl` in the following two ways.
 
 1. Interface with the good ole' object-oriented Python API that everyone knows and loves through Julia (i.e. `imagecollection.filterDate(...).mean()`)
 2. Interface with EarthEngine using with Julia-like syntax that leverages types and multiple dispacthing (i.e. `mean(filterDate(imagecollection,...))`).
@@ -29,13 +29,13 @@ julia> using Conda
 julia> Conda.add("earthengine-api",channel="conda-forge");
 ```
 
-Now we can install the EE package. The EE.jl package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
+Now we can install the EE package. The EarthEngine.jl package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
 
 ```julia
 $ julia
 julia> ]
-pkg> add https://github.com/Kmarkert/EE.jl
-julia> using EE
+pkg> add https://github.com/Kmarkert/EarthEngine.jl
+julia> using EarthEngine
 ```
 
 If everything went well then you should have been able to import the EE package without any errors.

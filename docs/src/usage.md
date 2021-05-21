@@ -1,10 +1,14 @@
-# EE.jl Usage
+# EarthEngine.jl Usage
 
-This document serves to illustrate and discuss some of the internals and interesting bits when using the `EE.jl` Julia API. 
+This document serves to illustrate and discuss some of the internals and interesting bits when using the `EarthEngine.jl` Julia API. 
 
 The Julia API imports the majority of the functions from the Python API (currently missing the modules in `ee.Algorithms`...). The functions lose the `ee.Type` syntax so the one can simply call the methods by name and not have as much code. For example `ee.Reducer.histogram()` is simply `histogram()` in the Julia API. There are multiple versions of some methods depending on the ee.Type (like `mean()`) and the differences get handled by Julia's multiple dispatch, see [Leveraging Julia's multiple distpatch](#Leveraging-Julia's-multiple-distpatch) section for details.
 
 Another notable difference is how methods are called. For example, if you would like to filter an ImageCollection and then reduce an Image, the syntax changes from `imagecollection.filterDate(start,end).mean()` to `mean(filterDate(imagecollection, start, end))`. This makes the syntax more like native Julia syntax and not object oriented. If you like the Python API of interfacing with EE or want to easily convert your Python code to Julia, then see the [Using the Python API through Julia section](#Using-the-Python-API-through-Julia).
+
+## Importing the package
+
+The official name of this package is `EarthEngine` 
 
 ## EE Types
 
@@ -150,12 +154,12 @@ EE.Reducer(ee.Reducer.toList())
 #output: EE.Reducer(PyObject <ee.Reducer object at ...>)
 ```
 
-There are more likely than not more quirks in using the EE API this way, if there is a question or some unexpected behavior please file an [issue on the GitHub repo](https://github.com/KMarkert/EE.jl/issues)
+There are more likely than not more quirks in using the EE API this way, if there is a question or some unexpected behavior please file an [issue on the GitHub repo](https://github.com/KMarkert/EarthEngine.jl/issues)
 
 
 ## Using the Python API through Julia
 
-The `EE.jl` package also exposes the `ee` Python module so one can use the same code as one would when programming in Python. See the following example of valid Julia and Python code:
+The `EarthEngine.jl` package also exposes the `ee` Python module so one can use the same code as one would when programming in Python. See the following example of valid Julia and Python code:
 
 ```julia
 # import the EE package and initialize an ee session
