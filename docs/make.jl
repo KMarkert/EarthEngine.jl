@@ -1,6 +1,6 @@
 push!(LOAD_PATH,"../src/")
 
-using Documenter, EE
+using Documenter, EarthEngine
 
 pages = [
     "Home" => "index.md",
@@ -12,7 +12,7 @@ makedocs(;
     modules = [EE],
     authors = "Kel Markert",
     repo = "https://github.com/KMarkert/EE.jl/blob/{commit}{path}#L{line}",
-    sitename = "EE.jl",
+    sitename = "EarthEngine.jl",
     # format = Documenter.HTML(;
     #     prettyurls = get(ENV, "CI", "false") == "true",
     #     canonical = "https://deltares.github.io/Wflow.jl",
