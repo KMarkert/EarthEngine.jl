@@ -77,9 +77,11 @@ sample_data = getInfo(get(sample_cols,"list"))
 
 # plot the results
 theme(:bright)
-scatter(sample_data[1,:],sample_data[2,:],markersize=4,alpha=0.8,xlabel="Red",ylabel="NIR",leg=false)
+scatter(sample_data[1,:],sample_data[2,:],markersize=4,alpha=0.6,xlabel="Red",ylabel="NIR",leg=false)
 ```
+The results should look like the following figure:
 
+![example_scatterplot](docs/src/assets/example_scatterplot.png)
 
 ## 🚨 Warning 🚨
 
@@ -90,6 +92,5 @@ There are most likely function definitions that clobber with the Julia Base defi
 
 ## Acknowlegments
 
-This package is heavily influenced by many of the great develop
-
-*A lot* of code was reused from 
+ * This package is heavily influenced by many of the great develop resources by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)
+ * *A lot* of code was reused from [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) which illustrates how to wrap Python objects in Julia.
