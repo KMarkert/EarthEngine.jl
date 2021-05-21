@@ -9,7 +9,7 @@ pages = [
 ]
 
 makedocs(;
-    modules = [EE],
+    modules = [EarthEngine],
     authors = "Kel Markert",
     repo = "https://github.com/KMarkert/EE.jl/blob/{commit}{path}#L{line}",
     sitename = "EarthEngine.jl",
