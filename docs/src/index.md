@@ -29,7 +29,7 @@ julia> using Conda
 julia> Conda.add("earthengine-api",channel="conda-forge");
 ```
 
-Now we can install the EE package. The EarthEngine.jl package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
+Now we can install the EE package. The `EarthEngine.jl` package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
 
 ```julia
 $ julia
@@ -51,8 +51,8 @@ The first example is focused on importing the packing and performing a small geo
 ```julia
 using EarthEngine
 Initialize()
-dem = EE.Image("USGS/SRTMGL1_003");
-xy = Point(86.9250, 27.9881);
+dem = EE.Image("USGS/SRTMGL1_003")
+xy = Point(86.9250, 27.9881)
 value = get(first(sample(dem,xy,30)),"elevation")
 println(getInfo(value))
 # should print: 8729
@@ -66,10 +66,10 @@ As a more extensive example, we will sample data from a raster dataset. This is 
 using Plots
 using EarthEngine
 Initialize()
-img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913");
-band_names = ["B3","B4"]
+img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
+band_names = EE.List(["B3","B4"])
 samples_fc = sample(divide(select(img,band_names),10000);scale=30,numPixels=500)
-reducer = repeat(EE.Reducer(ee.Reducer.toList()),length(band_names))
+reducer = repeat(toList(EE.Reducer()),length(band_names))
 sample_cols =  EE.Dictionary(reduceColumns(samples_fc, reducer, band_names))
 sample_data = getInfo(get(sample_cols,"list"))
 
@@ -123,5 +123,5 @@ The results should look like the following image:
 
 ## Acknowlegments
 
- * This package is heavily influenced by many of the great develop resources by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)
+ * This package is heavily influenced by many of the great developer resources created by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)
  * *A lot* of code was reused from [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) which illustrates how to wrap Python objects in Julia.

@@ -4,7 +4,7 @@ Google Earth Engine in Julia!
 
 ![logo](docs/src/assets/logo-small.png)
 
-`EE.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
+`EarthEngine.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
 
 You can use `EarthEngine.jl` in the following two ways.
 
@@ -36,11 +36,12 @@ Now we can install the EE package. The EE.jl package is currently going through 
 ```julia
 $ julia
 julia> ]
-pkg> add https://github.com/Kmarkert/EarthEngine.jl
-julia> using EarthEngine
+pkg> add EarthEngine
+julia> using https://github.com/KMarkert/EarthEngine.jl
+julia> Initialize()
 ```
 
-If everything went well then you should have been able to import the EE package without any errors.
+If everything went well then you should have been able to import the EarthEngine package and initialize an session without any errors.
 
 ## Quick start
 
@@ -53,8 +54,8 @@ The first example is focused on importing the packing and performing a small geo
 ```julia
 using EarthEngine
 Initialize()
-dem = EE.Image("USGS/SRTMGL1_003");
-xy = Point(86.9250, 27.9881);
+dem = EE.Image("USGS/SRTMGL1_003")
+xy = Point(86.9250, 27.9881)
 value = get(first(sample(dem,xy,30)),"elevation")
 println(getInfo(value))
 # should print: 8729
@@ -68,11 +69,11 @@ As a more extensive example, we will sample data from a raster dataset. This is 
 using Plots
 using EarthEngine
 Initialize()
-img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913");
-band_names = ["B3","B4"]
+img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
+band_names = EE.List(["B3","B4"])
 samples_fc = sample(divide(select(img,band_names),10000);scale=30,numPixels=500)
-reducer = repeat(EE.Reducer(ee.Reducer.toList()),length(band_names))
-sample_cols =  EE.Dictionary(reduceColumns(samples_fc, reducer, band_names))
+reducer = repeat(toList(EE.Reducer()),length(band_names))
+sample_cols =  reduceColumns(samples_fc, reducer, band_names)
 sample_data = getInfo(get(sample_cols,"list"))
 
 # plot the results

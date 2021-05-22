@@ -8,7 +8,34 @@ Another notable difference is how methods are called. For example, if you would 
 
 ## Importing the package
 
-The official name of this package is `EarthEngine` 
+The official name of this package is `EarthEngine`, this naming convention is used for importing the package to Julia (i.e. `using EarthEngine`). When getting started, users have to run the function `Initialize()` to start an Earth Engine session (this is the same in the Python API). `Initialize()` also dynamically builds the Julia API from the Python API, therefore is can take a few seconds to load. If `Initialize()` is not run before tying any workflow with EarthEngine, you will get an error: `ERROR: ArgumentError: ref of NULL PyObject` because the Python API was not loaded into Julia as in the following example:
+
+**Does not work:** ❌
+```julia
+using EarthEngine
+
+dem = EE.Image("USGS/SRTMGL1_003")
+ERROR: ArgumentError: ref of NULL PyObject
+Stacktrace:
+    ...
+```
+
+**Works:** ✅
+```julia
+using EarthEngine
+# Intialize the API
+Initialize()
+
+dem = EE.Image("USGS/SRTMGL1_003")
+returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
+```
+
+Once imported, the module exports the variable `EE` which allows for users to access the Earth Engine types in Julia with abbreviated syntax. For example, instead of writting `img = EarthEngine.Image()` users can write `img = EE.Image()`. Just for illustration, we can see that the two ways of calling the module are equal:
+
+```julia
+EarthEngine.Image === EE.Image
+# returns: true
+```
 
 ## EE Types
 
@@ -34,17 +61,17 @@ end
 
 # get an Image and calculate a FeatureCollection
 img = EE.Image("LANDSAT/LC08/C01/T1_TOA/LC08_033032_20170719")
-fc = EE.FeatureCollection(sample(img;scale=30,numPixels=500))
+fc = sample(img;scale=30,numPixels=500)
 
 # works
 ndvi(img)
-# returns: EE.ComputedObject(PyObject <ee.image.Image object at ...>)
+# returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
 
 # does not work
 ndvi(fc)
-#ERROR: MethodError: no method matching ndvi(::EE.FeatureCollection)
+#ERROR: MethodError: no method matching ndvi(::EarthEngine.FeatureCollection)
 #Closest candidates are:
-#  ndvi(::EE.Image) at REPL[XX]:1
+#  ndvi(::EarthEngine.Image) at REPL[XX]:1
 ```
 
 Again, this allows users to create type safe user defined functions. This also allows users to take advantage of Julia's amazing [multiple dispatch](https://en.wikipedia.org/wiki/Multiple_dispatch) feature.
@@ -68,7 +95,7 @@ end
 
 # define an ndvi function to calculate for EE.Feature
 function ndvi(f)
-    f = EE.Feature(f)
+    f = EE.Feature(f) # cast type here so we can use EE.map
     r = EE.Number(get(f,"B4"))
     n = EE.Number(get(f,"B5"))
     # apply ndvi-number function
@@ -78,7 +105,7 @@ end
 
 # input a FeatureCollection into ndvi
 ndvi_fc = ndvi(fc)
-# returns: EE.FeatureCollection(PyObject <ee.featurecollection.FeatureCollection object at ...>)
+# returns: EarthEngine.FeatureCollection(PyObject <ee.featurecollection.FeatureCollection object at ...>)
 ```
 
 If you are used to Python then this code should not work (at least not return a FeatureCollection). We clearly defined `ndvi` multiple times and the last definition should not work with a FeatureCollection...so how does it work!? This is the power of multiple dispatch! By providing types Julia is able to determine which function to use depending on the input values.
@@ -89,9 +116,9 @@ We can check the different signatures of the function `ndvi` with the following 
 # check the signatures of `ndvi`
 methods(ndvi)
 # # 4 methods for generic function "ndvi":
-# [1] ndvi(img::EE.Image) in Main at REPL[XX]:2
-# [2] ndvi(fc::EE.FeatureCollection) in Main at REPL[XX]:2
-# [3] ndvi(nir::EE.Number, red::EE.Number) in Main at REPL[XX]:2
+# [1] ndvi(img::EarthEngine.Image) in Main at REPL[XX]:2
+# [2] ndvi(fc::EarthEngine.FeatureCollection) in Main at REPL[XX]:2
+# [3] ndvi(nir::EarthEngine.Number, red::EarthEngine.Number) in Main at REPL[XX]:2
 # [4] ndvi(f) in Main at REPL[XX]:2
 ```
 
@@ -99,62 +126,27 @@ If you are interested in learning more about mulitple dispatch, then pleae see t
 
 ## Quirks
 
-### Be careful with types
-
-Sometimes functions do not return the same type as the input, this can cause issues in the downstream processing when Julia tries to figure out which method signature to use. Take the following example, where we have an ImageCollection, filter the collection:
-
-```julia
-ic = EE.ImageCollection("LANDSAT/LT05/C01/T1_SR")
-filtered = filterDate(ic,"2000-01-01","2000-02-01")
-# returns: EE.Collection(PyObject <ee.imagecollection.ImageCollection object at ...>)
-```
-
-This returns an `EE.Collection` (which is techically a parent type of `EE.ImageCollection`) but will cause issues/unexpected behavior when trying to use the resulting variable in subsequent functions.
-
-A simple solution to this is to cast the result after filtering to an `EE.ImageCollection` and proceed as in the following code:
-
-```julia
-filtered = EE.ImageCollection(filterDate(ic,"2000-01-01","2000-02-01"))
-# returns: EE.ImageCollection(PyObject <ee.imagecollection.ImageCollection object at ...>)
-```
-
-When in doubt, cast the varible to the EE.type that you would like.
-
 ### Constructors with multiple dispatch
 
-Due to Juia's multiple dispathcing based on type sometime you will have to provide a type as the first argument into a constructor method for an EE object. For example, the function `gt()` has multiple uses: you can compared Images, Arrays, Numbers, etc. but there is also an `EE.Filter` constructor that `gt()`. If you try to create a filter using the keyword arguments as inputs such as `gt(;name="B4",value=0.05)` you will get an error because Julia cannot figure out which signature to use. To overcome this one can simply provide a blank object of the desired type as in below:
+Due to Juia's multiple dispathcing based on type, sometimes you will have to provide a type as the first argument into a constructor method for an EE object. For example, the function `gt()` has multiple uses: you can compared Images, Arrays, Numbers, etc. but there is also an `EE.Filter` constructor that we can create with `gt()`. If you try to create a filter using the keyword arguments as inputs, such as `gt(;name="B4",value=0.05)`, you will get an error because Julia cannot figure out which method signature to use. To overcome this, one can simply provide a blank object of the desired type as in below:
 
 ```julia
 filter = gt(EE.Filter(); name="B4", value=0.05)
 ```
 
-When in doubt, you can always provide the EE.Type as the first argument when creating a new object (i.e. `constant(EE.Image(),1)`). If you are using an object, Julia will determine which method signature to use and which type to provide it, i.e. `gt(random(),0.5)` will return an image.
+Julia will determine which method signature to use based on which type is provided, i.e. `toList(EE.Reducer())` will return a reducer rather than a list.
 
-While this works most of the time, this fails with methods that create types with multiple signatures.  This is because currently the Python Reducer object does not have an internal constructor so when no data is provided it throws an error. See the below example:
-
-```julia
-# works
-# no other method for histogram other than for Reducer
-histogram()
-# output: EE.ComputedObject(PyObject <ee.Reducer object at ...>)
-
-# does not work
-# cannot determine which signature to use
-toList()
-
-# does not work
-# Reducer constructor yields and error
-toList(EE.Reducer()) 
-```
-
-To overcome this challenge one can simply wrap the object from the Python API in a Julia quivalent type as in the following example:
+When in doubt, you can always provide the EE.Type as the first argument when creating a new object. In reality, it is probably best practice so that the code is more readable by users. Say we want to create a constant image, the two following lines of code are both valid:
 
 ```julia
-EE.Reducer(ee.Reducer.toList())
-#output: EE.Reducer(PyObject <ee.Reducer object at ...>)
+one = constant(1)
+one = constant(EE.Image(),1)
 ```
 
-There are more likely than not more quirks in using the EE API this way, if there is a question or some unexpected behavior please file an [issue on the GitHub repo](https://github.com/KMarkert/EarthEngine.jl/issues)
+The method `constant()` is only used to create an image within Earth Engine but providing the type allows for the signature to be defined and it is easy for readers to understand what constant is doing, ultimately making code more maintainable. 
+
+
+There are more likely than not more quirks in using the EE API this way, these are some that have been found so far. If there is a question or some unexpected behavior please file an [issue on the GitHub repo](https://github.com/KMarkert/EarthEngine.jl/issues)
 
 
 ## Using the Python API through Julia
