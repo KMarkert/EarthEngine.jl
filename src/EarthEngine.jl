@@ -15,15 +15,6 @@ const module_dir = @__DIR__
 # define a constant pointer to the ee object
 const ee = PyNULL()
 
-function __init__()
-    try 
-        copy!(ee, pyimport("ee"))
-    catch err
-        error("The `earthengine-api` package could not be imported. You must install the Python earthengine-api before using this package. The error was $err")
-    end
-
-end
-
 version() = VersionNumber(ee.__version__)
 
 const pre_type_map = []
@@ -162,7 +153,13 @@ the Python API). Accepts arguments and keywords from the Python ee.Initialize()
 function. This function also dynamically builds the EE API and creates the methods 
 with signatures for each EE Type.
 """
-function Initialize(args...; kwargs...)    
+function Initialize(args...; kwargs...)   
+    try 
+        copy!(ee, pyimport("ee"))
+    catch err
+        error("The `earthengine-api` package could not be imported. You must install the Python earthengine-api before using this package. The error was $err")
+    end
+     
     try
         ee.Initialize(args...; kwargs...)
     catch err
@@ -197,6 +194,6 @@ include("eetypes.jl")
 
 const EE = EarthEngine
 
-export EE, ee, initialize, authenticate
+export EE, ee, Initialize, Authenticate
 
 end # module
