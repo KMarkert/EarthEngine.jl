@@ -3,6 +3,7 @@ __precompile__(true)
 module EarthEngine
 
 using PyCall
+using OrderedCollections
 import Base: 
     length, keys, contains, split, 
     replace, lowercase, string, filter, 
@@ -22,7 +23,7 @@ const pre_type_map = []
 
 # Maps a python object corresponding to an EE class to a Julia type which
 # wraps that class.
-const type_map = Dict()
+const type_map = OrderedDict{PyObject,DataType}()
 
 abstract type EEWrapped end
 
@@ -143,7 +144,7 @@ function pyattr_set(classes, methods...)
     end
 end
 
-const ee_exports = []
+const ee_exports = OrderedSet()
 
 """
     Initialize(args...; kwargs...)
@@ -167,7 +168,8 @@ function Initialize(args...; kwargs...)
     end
     
     # pull in the types and dynamically wrap things after initialization
-    include("$(module_dir)/eepsuedotypes.jl")
+    include("$(module_dir)/eetypes.jl")
+    # include("$(module_dir)/eepsuedotypes.jl")
     include("$(module_dir)/eefuncs.jl") 
 
     for f in Symbol.(ee_exports)
@@ -190,7 +192,6 @@ function Authenticate(args...; kwargs...)
     end
 end
 
-include("eetypes.jl")
 
 const EE = EarthEngine
 
