@@ -29,15 +29,11 @@ psuedotypes = [
     :Model,
     :PixelType,
     :Projection,
-    :Reducer
+    :Reducer,
 ]
 
 # primitive types that other types inherit from
-basetypes = [
-    :Collection,
-    :Element,
-    :ComputedObject,
-]
+basetypes = [:Collection, :Element, :ComputedObject]
 
 # concat types together in one vector
 # order matters!!! basetypes have to be after everything else
@@ -46,22 +42,22 @@ types = vcat(maintypes, psuedotypes, basetypes)
 # create the Julia types from Python objects
 for type in types
     @eval begin
-        @pytype $(type) ()->ee.$(type)
+        @pytype $(type) () -> ee.$(type)
     end
 end
 
 # define helper constructor for empty types that wrap more cryptic constructors
 # this allows users to simply call EE.Type() to get a type value without having to provide inputs
 # empty constructors for base types
-EarthEngine.ComputedObject() = EarthEngine.ComputedObject("","")
-EarthEngine.Element() = EarthEngine.Element("","")
-EarthEngine.Collection() = EarthEngine.Collection("","")
+EarthEngine.ComputedObject() = EarthEngine.ComputedObject("", "")
+EarthEngine.Element() = EarthEngine.Element("", "")
+EarthEngine.Collection() = EarthEngine.Collection("", "")
 
 # empty constructors for psuedo types
 EarthEngine.Reducer() = EarthEngine.Reducer(EarthEngine.ComputedObject())
 EarthEngine.Array() = EarthEngine.Array([])
 EarthEngine.Blob() = EarthEngine.Blob("")
-EarthEngine.DateRange() = EarthEngine.DateRange("","")
+EarthEngine.DateRange() = EarthEngine.DateRange("", "")
 EarthEngine.Classifier() = EarthEngine.Classifier(EarthEngine.ComputedObject())
 EarthEngine.Clusterer() = EarthEngine.Clusterer(EarthEngine.ComputedObject())
 EarthEngine.ConfusionMatrix() = EarthEngine.ConfusionMatrix("")
@@ -75,7 +71,7 @@ EarthEngine.Projection() = EarthEngine.Projection(EarthEngine.ComputedObject())
 # empty constructors for main types
 EarthEngine.Date() = EarthEngine.Date("")
 EarthEngine.List() = EarthEngine.List([])
-EarthEngine.Geometry() = EarthEngine.Geometry(Point(NaN,NaN))
+EarthEngine.Geometry() = EarthEngine.Geometry(Point(NaN, NaN))
 EarthEngine.Feature() = EarthEngine.Feature(EarthEngine.Geometry())
 EarthEngine.FeatureCollection() = EE.FeatureCollection([])
 EarthEngine.ImageCollection() = EarthEngine.ImageCollection("")

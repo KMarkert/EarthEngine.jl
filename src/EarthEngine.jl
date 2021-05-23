@@ -4,11 +4,22 @@ module EarthEngine
 
 using PyCall
 using OrderedCollections
-import Base: 
-    length, keys, contains, split, 
-    replace, lowercase, string, filter, 
-    union, size, identity, map, first,
-    get, repeat
+import Base:
+    length,
+    keys,
+    contains,
+    split,
+    replace,
+    lowercase,
+    string,
+    filter,
+    union,
+    size,
+    identity,
+    map,
+    first,
+    get,
+    repeat
 
 
 const module_dir = @__DIR__
@@ -19,7 +30,6 @@ const ee = PyNULL()
 version() = VersionNumber(ee.__version__)
 
 const pre_type_map = []
-
 
 # Maps a python object corresponding to an EE class to a Julia type which
 # wraps that class.
@@ -79,7 +89,7 @@ end
 
 quot(x) = Expr(:quote, x)
 
-ee_wrap(x::Union{AbstractArray, Tuple}) = [ee_wrap(_) for _ in x]
+ee_wrap(x::Union{AbstractArray,Tuple}) = [ee_wrap(_) for _ in x]
 
 ee_wrap(pyo) = pyo
 
@@ -154,23 +164,26 @@ the Python API). Accepts arguments and keywords from the Python ee.Initialize()
 function. This function also dynamically builds the EE API and creates the methods 
 with signatures for each EE Type.
 """
-function Initialize(args...; kwargs...)   
-    try 
+function Initialize(args...; kwargs...)
+    try
         copy!(ee, pyimport("ee"))
     catch err
-        error("The `earthengine-api` package could not be imported. You must install the Python earthengine-api before using this package. The error was $err")
+        error(
+            "The `earthengine-api` package could not be imported. You must install the Python earthengine-api before using this package. The error was $err",
+        )
     end
-     
+
     try
         ee.Initialize(args...; kwargs...)
     catch err
-        error("Could not initialize an `ee` session. Please try authenticating the earthengine-api.")
+        error(
+            "Could not initialize an `ee` session. Please try authenticating the earthengine-api.",
+        )
     end
-    
+
     # pull in the types and dynamically wrap things after initialization
     include("$(module_dir)/eetypes.jl")
-    # include("$(module_dir)/eepsuedotypes.jl")
-    include("$(module_dir)/eefuncs.jl") 
+    include("$(module_dir)/eefuncs.jl")
 
     for f in Symbol.(ee_exports)
         @eval export $f
@@ -188,11 +201,13 @@ function Authenticate(args...; kwargs...)
     try
         ee.Autheticate(args...; kwargs...)
     catch err
-        error("Could not run authetication workflow... Please try authenticating manually using the earthengine-api CLI (i.e. `\$ earthengine autheticate`")
+        error(
+            "Could not run authetication workflow... Please try authenticating manually using the earthengine-api CLI (i.e. `\$ earthengine autheticate`",
+        )
     end
 end
 
-
+# create an abreviated variable for the module
 const EE = EarthEngine
 
 export EE, ee, Initialize, Authenticate

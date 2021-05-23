@@ -15,7 +15,7 @@ for key in collect(keys(type_map))
         if ~startswith(method, "_")
             pyattr_set([type_map[key]], Symbol(method))
             if ~(method in ee_exports)
-                push!(ee_exports,method)
+                push!(ee_exports, method)
             end
         end
     end
@@ -51,8 +51,8 @@ modules = [
     :Reducer,
     :String,
     :Terrain,
-    :data
-] 
+    :data,
+]
 
 mod_methods = OrderedDict()
 
@@ -66,14 +66,14 @@ for mod in modules
 end
 
 # loop over the modules again
-for (k,v) in mod_methods
+for (k, v) in mod_methods
     # loop over the module methods
     for submethod in v
         # check if it is not private
-        if ~startswith(submethod,"_")
+        if ~startswith(submethod, "_")
             # create a julia function of the public methods
             m = Symbol(submethod)
-            @eval begin 
+            @eval begin
                 function $m(args...; kwargs...)
                     method = ee.$k.$(string(submethod))
                     result = pycall(method, PyObject, args...; kwargs...)
@@ -82,7 +82,7 @@ for (k,v) in mod_methods
             end
             # add to list of methods for module export
             if ~(submethod in ee_exports)
-                push!(ee_exports,submethod)
+                push!(ee_exports, submethod)
             end
         end
     end
@@ -91,10 +91,10 @@ end
 # for some reason the ee.Algorithms module is a Dict....why???
 # function to recusively search though the ee.Algorithms module and wrap all python functions
 function wrap_eealgorithms(dict)
-    for (k,v) in dict
+    for (k, v) in dict
         if typeof(v) == PyCall.PyObject
             m = Symbol(k)
-            @eval begin 
+            @eval begin
                 function $m(args...; kwargs...)
                     method = $v
                     result = pycall(method, PyObject, args...; kwargs...)
@@ -103,7 +103,7 @@ function wrap_eealgorithms(dict)
             end
             # add to list of methods for module export
             if ~(k in ee_exports)
-                push!(ee_exports,k)
+                push!(ee_exports, k)
             end
         else
             wrap_eealgorithms(v)
