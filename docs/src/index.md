@@ -11,7 +11,7 @@ You can use `EarthEngine.jl` in the following two ways.
 
 See the `Usage` section of the documentation for more details on how to use.
 
-## Why Julia + EE?
+## Why Julia + Earth Engine?
 
 The officially supported Earth Engine APIs are written in [JavaScript](https://developers.google.com/earth-engine/guides/getstarted) and [Python](https://developers.google.com/earth-engine/guides/python_install). These APIs provide great interfaces to the platform but limits some developers to those languages. Other community developed APIs have been developed ,like [rgee](https://github.com/r-spatial/rgee/), and allow developers to interface with EE in their favorite languages. This package provides the EarthEngine API for users who love programming in Julia!
 
