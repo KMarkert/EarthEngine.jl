@@ -9,7 +9,7 @@ You can use `EarthEngine.jl` in the following two ways.
 1. Interface with the good ole' object-oriented Python API that everyone knows and loves through Julia (i.e. `imagecollection.filterDate(...).mean()`)
 2. Interface with EarthEngine using with Julia-like syntax that leverages types and multiple dispacthing (i.e. `mean(filterDate(imagecollection,...))`).
 
-See the `Usage` section of the documentation for more details on how to use.
+See the [Usage](usage/) section of the documentation for more details on how to use.
 
 ## Why Julia + Earth Engine?
 

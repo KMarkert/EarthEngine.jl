@@ -157,7 +157,7 @@ The `EarthEngine.jl` package also exposes the `ee` Python module so one can use 
 # import the EE package and Initialize an ee session
 # this is the only non-Python
 using EarthEngine
-ee.Initialize()
+Initialize()
 
 # now we can access the `ee` module like we would with Python
 dem = ee.Image("USGS/SRTMGL1_003");
