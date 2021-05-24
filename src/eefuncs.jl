@@ -111,5 +111,10 @@ function wrap_eealgorithms(dict)
     end
 end
 
+# get the dict of ee algorithms
+algorithms_dict = ee.Algorithms
+# remove the GeometryConstructors functions that clobber with others
+delete!(algorithms_dict, "GeometryConstructors")
+
 # apply recusive wrapping
-wrap_eealgorithms(ee.Algorithms)
+wrap_eealgorithms(algorithms_dict)
