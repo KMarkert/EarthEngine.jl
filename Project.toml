@@ -1,7 +1,7 @@
 name = "EarthEngine"
 uuid = "e0774970-6faf-4e9a-8c34-3860fa82b5ca"
 authors = ["kmarkert <kel.markert@gmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 
 [deps]
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
