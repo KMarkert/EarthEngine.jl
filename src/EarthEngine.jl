@@ -2,6 +2,7 @@ __precompile__(true)
 
 module EarthEngine
 
+using Logging
 using PyCall
 using OrderedCollections
 import Base:
@@ -175,10 +176,18 @@ function Initialize(args...; kwargs...)
 
     try
         ee.Initialize(args...; kwargs...)
-    catch err
-        error(
-            "Could not initialize an `ee` session. Please try authenticating the earthengine-api.",
-        )
+        
+    catch
+        @warn "Could not initialize an `ee` session. Trying authentication workflow..."
+
+        try
+            Authenticate()
+            ee.Initialize()
+        catch
+            error(
+                "Could not initialize an `ee` session or run authentication workflow. Please authenticate manually using the earthengine-api CLI (i.e. `\$ earthengine authenticate`",
+            )
+        end
     end
 
     # pull in the types and dynamically wrap things after initialization
@@ -199,17 +208,15 @@ once if the EE API has not be used before.
 """
 function Authenticate(args...; kwargs...)
     try
-        ee.Autheticate(args...; kwargs...)
+        ee.Authenticate(args...; kwargs...)
     catch err
-        error(
-            "Could not run authetication workflow... Please try authenticating manually using the earthengine-api CLI (i.e. `\$ earthengine autheticate`",
-        )
+        @error "Could not authenticate `ee`...see following error: $err"
     end
 end
 
 # create an abreviated variable for the module
 const EE = EarthEngine
 
-export EE, ee, Initialize, Authenticate
+export EE, ee, Initialize
 
 end # module
