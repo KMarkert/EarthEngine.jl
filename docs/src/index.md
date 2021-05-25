@@ -2,7 +2,7 @@
 
 Google Earth Engine in Julia!
 
-`EarthEngine.jl` is used to interface with the *amazing* cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API. 
+`EarthEngine.jl` is used to interface with the _amazing_ cloud-based geospatial processing platform, [Google Earth Engine](https://earthengine.google.com), using the Julia programming language as a wrapper aroung the EE Python API.
 
 You can use `EarthEngine.jl` in the following two ways.
 
@@ -29,16 +29,17 @@ julia> using Conda
 julia> Conda.add("earthengine-api",channel="conda-forge");
 ```
 
-Now we can install the EE package. The `EarthEngine.jl` package is currently going through the process to be part of the official Julia package registry, until that is finished you can install directly from Github using the following code:
+Now we can install the Earth Enging package. The `EarthEngine.jl` is avialable through the Julia package registry, therefore you can install using the following code:
 
 ```julia
 $ julia
 julia> ]
-pkg> add https://github.com/Kmarkert/EarthEngine.jl
+pkg> add EarthEngine
 julia> using EarthEngine
+julia> Initialize()
 ```
 
-If everything went well then you should have been able to import the EE package without any errors.
+If everything went well then you should have been able to import the EarthEngine package and initialize an session without any errors.
 
 ## Quick start
 
@@ -77,6 +78,7 @@ sample_data = getInfo(get(sample_cols,"list"))
 theme(:bright)
 scatter(sample_data[1,:],sample_data[2,:],markersize=4,alpha=0.6,xlabel="Red",ylabel="NIR",leg=false)
 ```
+
 The results should look like the following figure:
 
 ![example_scatterplot](assets/example_scatterplot.png)
@@ -101,7 +103,7 @@ ndvi_img = ndvi(img)
 color_map = map(x -> hex(x,:RRGGBB), cgrad(:Greens_9));
 
 thumburl = getThumbUrl(
-    ndvi_img, 
+    ndvi_img,
     Dict(
         "min" => 0,
         "max" => 0.8,
@@ -123,5 +125,5 @@ The results should look like the following image:
 
 ## Acknowlegments
 
- * This package is heavily influenced by many of the great developer resources created by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)
- * *A lot* of code was reused from [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) which illustrates how to wrap Python objects in Julia.
+- This package is heavily influenced by many of the great developer resources created by the Earth Engine community such as [rgee](https://github.com/r-spatial/rgee/) and other packages in the [Google Earth Engine Community Org](https://github.com/gee-community/)
+- _A lot_ of code was reused from [Pandas.jl](https://github.com/JuliaPy/Pandas.jl) which illustrates how to wrap Python objects in Julia.
