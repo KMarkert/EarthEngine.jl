@@ -37,6 +37,7 @@ Now we can install the EarthEngine package. `EarthEngine.jl` is available throug
 $ julia
 julia> ]
 pkg> add EarthEngine
+julia> using EarthEngine
 julia> Initialize()
 ```
 
@@ -126,7 +127,7 @@ The results should look like the following image:
 
 ## 🚨 Warning 🚨
 
-**This package is in development and should not be used for production services!** This is more of a proof of concept in using the EarthEngine API with type definitions, which Julia provides. There may be some unexpected behavior with the conversion of types from the EE Python API to Julia, see the [Quirks section](https://kmarkert.github.io/EarthEngine.jl/dev/usage/#Quirks) of the documentation to learn more.
+**This package is in development and should not be used for production services!** This package provides a proof of concept in using the EarthEngine API with type definitions, which Julia provides. There may be some unexpected behavior with the conversion of types from the EE Python API to Julia, see the [Quirks section](https://kmarkert.github.io/EarthEngine.jl/dev/usage/#Quirks) of the documentation to learn more.
 
 There are most likely function definitions that clobber with the Julia Base definitions so if you come across any issues, please log an [issue on Github](https://github.com/KMarkert/EarthEngine.jl/issues) so that it can be resolved.
 
