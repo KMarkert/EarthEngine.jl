@@ -22,9 +22,9 @@ for key in collect(keys(type_map))
 end
 
 
-# next do two passes on the individual modules
-# first pass is to get the methods for each module
-# second pass is to map the methods to julia funcs
+# next get methods from the individual modules
+# outer loop is to get the methods for each module
+# inner loop is to map the methods from module to julia funcs
 
 modules = [
     :Array,
@@ -58,24 +58,18 @@ mod_methods = OrderedDict()
 
 # loop over the modules
 for mod in modules
-    @eval begin
-        submethods = collect(py"dir"(ee.$(string(mod))))
-        # get the module functions and add to dict
-        mod_methods[$(string(mod))] = submethods
-    end
-end
+    # get the module functions and add to dict
+    @eval submethods = collect(py"dir"(ee.$(string(mod))))
 
-# loop over the modules again
-for (k, v) in mod_methods
     # loop over the module methods
-    for submethod in v
-        # check if it is not private
+    for submethod in submethods
+        # check if submethod is not private
         if ~startswith(submethod, "_")
+            m = Symbol(submethod) 
             # create a julia function of the public methods
-            m = Symbol(submethod)
             @eval begin
                 function $m(args...; kwargs...)
-                    method = ee.$k.$(string(submethod))
+                    method = ee.$string(mod).$(string(submethod))
                     result = pycall(method, PyObject, args...; kwargs...)
                     ee_wrap(result)
                 end
