@@ -9,10 +9,6 @@ Initialize()
 ```
 
 ```@docs
-Authenticate()
-```
-
-```@docs
 EarthEngine.ee_wrap
 ```
 
