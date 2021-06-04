@@ -15,9 +15,9 @@ The official name of this package is `EarthEngine`, this naming convention is us
 using EarthEngine
 
 dem = EE.Image("USGS/SRTMGL1_003")
-ERROR: ArgumentError: ref of NULL PyObject
-Stacktrace:
-    ...
+# ERROR: ArgumentError: ref of NULL PyObject
+# Stacktrace:
+#     ...
 ```
 
 **Works:** ✅
@@ -27,7 +27,7 @@ using EarthEngine
 Initialize()
 
 dem = EE.Image("USGS/SRTMGL1_003")
-returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
+# returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
 ```
 
 Once imported, the module exports the variable `EE` which allows for users to access the Earth Engine types in Julia with abbreviated syntax. For example, instead of writting `img = EarthEngine.Image()` users can write `img = EE.Image()`. Just for illustration, we can see that the two ways of calling the module are equal:
