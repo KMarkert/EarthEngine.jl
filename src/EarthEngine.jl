@@ -20,7 +20,8 @@ import Base:
     map,
     first,
     get,
-    repeat
+    repeat,
+    log10
 
 
 const module_dir = @__DIR__
