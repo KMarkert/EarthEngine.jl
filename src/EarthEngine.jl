@@ -37,9 +37,9 @@ const pre_type_map = []
 # wraps that class.
 const type_map = OrderedDict{PyObject,DataType}()
 
-abstract type EEWrapped end
+abstract type AbstractEEObject end
 
-PyCall.PyObject(x::EEWrapped) = x.pyo
+PyCall.PyObject(x::AbstractEEObject) = x.pyo
 
 """
     @pytype name class
@@ -48,7 +48,7 @@ Macro for creating a Julia Type that wraps a PyObject class
 """
 macro pytype(name, class)
     quote
-        struct $(name) <: EEWrapped
+        struct $(name) <: AbstractEEObject
             pyo::PyObject
             $(esc(name))(pyo::PyObject) = new(pyo)
             function $(esc(name))(args...; kwargs...)
@@ -144,7 +144,7 @@ end
 """
     pyattr_set(types, methods...)
 
-For each Julia type `T<:EEWrapped` in `types` and each method `m` in `methods`,
+For each Julia type `T<:AbstractEEObject` in `types` and each method `m` in `methods`,
 define a new function `m(t::T, args...)` that delegates to the underlying
 pyobject wrapped by `t`.
 """
@@ -163,7 +163,7 @@ const ee_exports = OrderedSet()
 
 Function to initialize an EarthEngine session (analagous to ee.Initialize() from
 the Python API). Accepts arguments and keywords from the Python ee.Initialize()
-function. This function also dynamically builds the EE API and creates the methods 
+function. This function also dynamically builds the EE API and creates the methods
 with signatures for each EE Type.
 """
 function Initialize(args...; kwargs...)
