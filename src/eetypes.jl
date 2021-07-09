@@ -1,6 +1,6 @@
 # This file defines the EarthEngine types 
 
-# main 
+# list of main earthengine types
 maintypes = [
     :Number,
     :String,
@@ -33,11 +33,16 @@ psuedotypes = [
 ]
 
 # primitive types that other types inherit from
-basetypes = [:Collection, :Element, :ComputedObject]
+basetypes = [
+    :Collection,
+    :Element,
+    :ComputedObject,
+    :Function,
+]
 
 # concat types together in one vector
 # order matters!!! basetypes have to be after everything else
-types = vcat(maintypes, psuedotypes, basetypes)
+types = vcat(psuedotypes, maintypes, basetypes)
 
 # create the Julia types from Python objects
 for type in types
