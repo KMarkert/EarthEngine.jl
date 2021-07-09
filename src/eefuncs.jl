@@ -63,13 +63,14 @@ for mod in modules
 
     # loop over the module methods
     for submethod in submethods
+        submethod = convert(AbstractString,submethod)
         # check if submethod is not private
         if ~startswith(submethod, "_")
-            m = Symbol(submethod) 
+            m = Symbol(submethod)
             # create a julia function of the public methods
             @eval begin
                 function $m(args...; kwargs...)
-                    method = ee.$string(mod).$(string(submethod))
+                    method = ee.$(string(mod)).$(submethod)
                     result = pycall(method, PyObject, args...; kwargs...)
                     ee_wrap(result)
                 end
