@@ -33,12 +33,7 @@ psuedotypes = [
 ]
 
 # primitive types that other types inherit from
-basetypes = [
-    :Collection,
-    :Element,
-    :ComputedObject,
-    :Function,
-]
+basetypes = [:Collection, :Element, :ComputedObject, :Function]
 
 # concat types together in one vector
 # order matters!!! basetypes have to be after everything else

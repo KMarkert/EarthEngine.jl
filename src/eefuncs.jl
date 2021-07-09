@@ -63,7 +63,7 @@ for mod in modules
 
     # loop over the module methods
     for submethod in submethods
-        submethod = convert(AbstractString,submethod)
+        submethod = convert(AbstractString, submethod)
         # check if submethod is not private
         if ~startswith(submethod, "_")
             m = Symbol(submethod)

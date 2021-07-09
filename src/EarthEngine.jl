@@ -177,7 +177,7 @@ function Initialize(args...; kwargs...)
 
     try
         ee.Initialize(args...; kwargs...)
-        
+
     catch
         @warn "Could not initialize an `ee` session. Trying authentication workflow..."
 
@@ -203,7 +203,7 @@ end
 """
     Authenticate()
 
-Function to execute the EarthEngine authetication workflow (analgous to 
+Function to execute the EarthEngine authetication workflow (analgous to
 ee.Authenticate() in the Python API). This function should only be executed
 once if the EE API has not be used before.
 """
