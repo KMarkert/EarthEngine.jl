@@ -192,8 +192,8 @@ function Initialize(args...; kwargs...)
     end
 
     # pull in the types and dynamically wrap things after initialization
-    include("$(module_dir)/eetypes.jl")
-    include("$(module_dir)/eefuncs.jl")
+    include(joinpath(module_dir,"eetypes.jl"))
+    include(joinpath(module_dir,"eefuncs.jl"))
 
     for f in Symbol.(ee_exports)
         @eval export $f
