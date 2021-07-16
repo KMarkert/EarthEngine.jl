@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Trendy Lights · EarthEngine.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.039/juliamono-regular.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.11/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="EarthEngine.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">EarthEngine.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><a class="tocitem" href="../../usage/">Usage</a></li><li><span class="tocitem">Examples</span><ul><li><a class="tocitem" href="../landsat8_cloudmasking/">Landsat 8 Cloud Masking</a></li><li><a class="tocitem" href="../sentinel1_composite/">Sentinel 1 Composite</a></li><li class="is-active"><a class="tocitem" href>Trendy Lights</a><ul class="internal"><li><a class="tocitem" href="#Code"><span>Code</span></a></li><li><a class="tocitem" href="#Expected-Results"><span>Expected Results</span></a></li></ul></li><li><a class="tocitem" href="../classification/">Classification</a></li></ul></li><li><a class="tocitem" href="../../api/">API</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Examples</a></li><li class="is-active"><a href>Trendy Lights</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Trendy Lights</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/KMarkert/EarthEngine.jl/blob/master/docs/src/examples/trendy_lights.md#L" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Trendy-Lights"><a class="docs-heading-anchor" href="#Trendy-Lights">Trendy Lights</a><a id="Trendy-Lights-1"></a><a class="docs-heading-anchor-permalink" href="#Trendy-Lights" title="Permalink"></a></h1><p>This example highlights how the EE Julia API can be used to process time series of data and calculate a trend in time. Example from the <a href="https://code.earthengine.google.com/?scriptPath=Examples:Image%20Collection/Linear%20Fit">Javascript Trendy Lights example</a>.</p><h2 id="Code"><a class="docs-heading-anchor" href="#Code">Code</a><a id="Code-1"></a><a class="docs-heading-anchor-permalink" href="#Code" title="Permalink"></a></h2><pre><code class="language-julia">using EarthEngine
+Initialize()
+
+# Add a band containing image date as years since 1990.
+function createTimeBand(img)
+  img = EE.Image(img)
+  starttime = EE.Date(&quot;1990-01-01&quot;)
+  year = difference(date(img), starttime, &quot;year&quot;)
+  return float(addBands(year,img))
+end
+
+# get night light collection and add time band
+collection = map(
+  select(
+    EE.ImageCollection(&quot;NOAA/DMSP-OLS/CALIBRATED_LIGHTS_V4&quot;)
+    ,&quot;avg_vis&quot;
+  ), createTimeBand
+)
+
+# Fit a linear trend to the nighttime lights collection.
+fit = reduce(collection, linearFit())
+
+# define a region to view results
+pt = Point(15, 45)
+region = bounds(buffer(pt,25e5))
+
+# Display trend in red/blue, brightness in green.
+getThumbURL(fit, Dict(
+  :min =&gt; 0,
+  :max =&gt; (0.18, 20, -0.18,),
+  :bands =&gt; [&quot;scale&quot;, &quot;offset&quot;, &quot;scale&quot;],
+  :dimensions =&gt; 1024,
+  :region =&gt; region,
+  :format =&gt; &quot;png&quot;
+))</code></pre><h2 id="Expected-Results"><a class="docs-heading-anchor" href="#Expected-Results">Expected Results</a><a id="Expected-Results-1"></a><a class="docs-heading-anchor-permalink" href="#Expected-Results" title="Permalink"></a></h2><p><img src="../../assets/example_trendylights.png" alt="example_trendylights"/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../sentinel1_composite/">« Sentinel 1 Composite</a><a class="docs-footer-nextpage" href="../classification/">Classification »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.3 on <span class="colophon-date" title="Friday 16 July 2021 12:09">Friday 16 July 2021</span>. Using Julia version 1.4.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
