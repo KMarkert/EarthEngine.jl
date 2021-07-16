@@ -6,9 +6,10 @@ pages = [
     "Home" => "index.md",
     "Usage" => "usage.md",
     "Examples" => [
-        "Classification" => "examples/classification.md",
         "Landsat 8 Cloud Masking" => "examples/landsat8_cloudmasking.md",
-        "Sentinel 1 Composite" => "examples/sentinel1_composite.md"
+        "Sentinel 1 Composite" => "examples/sentinel1_composite.md",
+        "Trendy Lights" => "examples/trendy_lights.md",
+        "Classification" => "examples/classification.md",
     ],
     "API" => "api.md",
 ]
