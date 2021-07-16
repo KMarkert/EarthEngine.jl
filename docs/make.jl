@@ -5,6 +5,11 @@ using Documenter, EarthEngine
 pages = [
     "Home" => "index.md",
     "Usage" => "usage.md",
+    "Examples" => [
+        "Classification" => "examples/classification.md",
+        "Landsat 8 Cloud Masking" => "examples/landsat8_cloudmasking.md",
+        "Sentinel 1 Composite" => "examples/sentinel1_composite.md"
+    ],
     "API" => "api.md",
 ]
 
@@ -21,7 +26,7 @@ makedocs(;
     pages = pages,
 )
 
-deploydocs(; 
+deploydocs(;
     deps = Deps.pip("earthengine-api"),
     repo = "github.com/KMarkert/EarthEngine.jl.git",
     devbranch = "main"

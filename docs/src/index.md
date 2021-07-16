@@ -10,7 +10,7 @@ Google Earth Engine in Julia!
 You can use `EarthEngine.jl` in the following two ways.
 
 1. Interface with the good ole' object-oriented Python API that everyone knows and loves through Julia (i.e. `imagecollection.filterDate(...).mean()`)
-2. Interface with Earth Engine using Julia-like syntax that leverages types and multiple (i.e. `(mean(filterDate(imagecollection,...)))`)
+2. Interface with Earth Engine using Julia-like syntax that leverages types and multiple dispatch (i.e. `(mean(filterDate(imagecollection,...)))`)
 
 See the [Usage page](https://kmarkert.github.io/EarthEngine.jl/dev/usage/) of the documentation for more details on how to use.
 
