@@ -5,31 +5,21 @@ module EarthEngine
 using Logging
 using PyCall
 using OrderedCollections
-import Base:
-    length,
-    keys,
-    contains,
-    split,
-    replace,
-    lowercase,
-    string,
-    filter,
-    union,
-    size,
-    identity,
-    map,
-    first,
-    get,
-    repeat,
-    log10
-
+# import Core: String
 
 const module_dir = @__DIR__
+
+# include the Base module methods to extend
+include(joinpath(module_dir,"extendfuncs.jl"))
+
+# include the functions to support interactive mapping
+# include(joinpath(module_dir,"eemap.jl"))
 
 # define a constant pointer to the ee object
 const ee = PyNULL()
 
 version() = VersionNumber(ee.__version__)
+
 
 const pre_type_map = []
 
@@ -156,7 +146,33 @@ function pyattr_set(classes, methods...)
     end
 end
 
+"""
+    eefunc(method)
+
+Function to wrap Julia defined method on the Python side. This is needed when applying
+functions to specific types such as EE.List.
+"""
+function eefunc(method)
+    # extract out the callable attribute from python object
+    return PyObject(method)."__call__"
+end
+
+"""
+    @eefunc method
+
+Macro to wrap Julia defined method on the Python side. This is needed when applying
+functions to specific types such as EE.List.
+"""
+macro eefunc(method)
+    quote
+        eefunc($(esc(method)))
+    end
+end
+
+# constant set to hold unique method names from the EE Python API
 const ee_exports = OrderedSet()
+# specify a list of unique names to not export
+const excludeexports = [:String]
 
 """
     Initialize(args...; kwargs...)
@@ -195,9 +211,13 @@ function Initialize(args...; kwargs...)
     include(joinpath(module_dir,"eetypes.jl"))
     include(joinpath(module_dir,"eefuncs.jl"))
 
+    # export the EE methods
     for f in Symbol.(ee_exports)
-        @eval export $f
+        if ~(f in excludeexports)
+            @eval export $f
+        end
     end
+
 end
 
 """
@@ -218,6 +238,6 @@ end
 # create an abreviated variable for the module
 const EE = EarthEngine
 
-export EE, ee, Initialize
+export EE, ee, Initialize, @eefunc
 
 end # module
