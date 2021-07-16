@@ -113,3 +113,36 @@ delete!(algorithms_dict, "GeometryConstructors")
 
 # apply recusive wrapping
 wrap_eealgorithms(algorithms_dict)
+
+
+# define dispatch signatures for Mathematical Operations
+# from https://docs.julialang.org/en/v1/manual/mathematical-operations/#Bitwise-Operators
+# arithmetic operators
+Base.:+(x::AbstractEEObject,y::AbstractEEObject) = add(x,y)
+Base.:-(x::AbstractEEObject,y::AbstractEEObject) = subtract(x,y)
+Base.:*(x::AbstractEEObject,y::AbstractEEObject) = multiply(x,y)
+Base.:/(x::AbstractEEObject,y::AbstractEEObject) = divide(x,y)
+Base.:÷(x::AbstractEEObject,y::AbstractEEObject) = toInt(divide(x,y))
+Base.:\(x::AbstractEEObject,y::AbstractEEObject) = divide(y,x)
+Base.:^(x::AbstractEEObject,y::AbstractEEObject) = pow(x,y)
+Base.:%(x::AbstractEEObject,y::AbstractEEObject) = mod(x,y)
+
+# bitwise pperators
+Base.:~(x::AbstractEEObject) = bitwiseNot(x)
+Base.:&(x::AbstractEEObject,y::AbstractEEObject) = bitwiseAnd(x,y)
+Base.:|(x::AbstractEEObject,y::AbstractEEObject) = bitwiseOr(x,y)
+Base.:⊻(x::AbstractEEObject,y::AbstractEEObject) = bitwiseXor(x,y)
+Base.:>>(x::AbstractEEObject,y::AbstractEEObject) = rightShift(x,y)
+Base.:<<(x::AbstractEEObject,y::AbstractEEObject) = leftShift(x,y)
+
+# numeric comparisons
+# Base.:==(x::AbstractEEObject,y::AbstractEEObject) = eq(x,y)
+# Base.:!=(x::AbstractEEObject,y::AbstractEEObject) = neq(x,y)
+# Base.:≠(x::AbstractEEObject,y::AbstractEEObject) = neq(x,y)
+# Base.isless(x::AbstractEEObject,y::AbstractEEObject) = lt(x,y)
+# Base.:<(x::AbstractEEObject,y::AbstractEEObject) = lt(x,y)
+# Base.:≤(x::AbstractEEObject,y::AbstractEEObject) = lte(x,y)
+# Base.:<=(x::AbstractEEObject,y::AbstractEEObject) = lte(x,y)
+# Base.:>(x::AbstractEEObject,y::AbstractEEObject) = gt(x,y)
+# Base.:≥(x::AbstractEEObject,y::AbstractEEObject) = gte(x,y)
+# Base.:>=(x::AbstractEEObject,y::AbstractEEObject) = gte(x,y)
