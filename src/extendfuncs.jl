@@ -64,3 +64,6 @@ import Base:
     values,
     time
     # zip,
+
+# explicitly import numerical arithmetic comparisons to extend
+import Base: ==, !=, ≠, <, ≤, <=, >, ≥, >=, isless
