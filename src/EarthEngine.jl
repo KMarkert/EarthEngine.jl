@@ -169,6 +169,19 @@ macro eefunc(method)
     end
 end
 
+"""
+    @eefunc method type
+
+Macro to wrap Julia defined method with a specific type signature on the Python side.
+This is needed when applying functions with type annotations using `map()`
+"""
+macro eefunc(method, type)
+    quote
+        wrapped(pyo::PyObject) = $(esc(method))($(esc(type))(pyo))
+        eefunc(wrapped)
+    end
+end
+
 # constant set to hold unique method names from the EE Python API
 const ee_exports = OrderedSet()
 # specify a list of unique names to not export
