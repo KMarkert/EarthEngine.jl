@@ -15,7 +15,7 @@ The official name of this package is `EarthEngine`, this naming convention is us
 using EarthEngine
 
 dem = EE.Image("USGS/SRTMGL1_003")
-# ERROR: ArgumentError: ref of NULL PyObject
+# ERROR: UndefVarError: Image not defined
 # Stacktrace:
 #     ...
 ```
@@ -126,7 +126,7 @@ If you are interested in learning more about multiple dispatch, then please see 
 
 ## Arithmetic with EE Types
 
-Thanks to Julia's multiple dispatch, most mathematical operations on EE Types are supported and are dispatched to the correct method based on type. A quick example of this can be seen when calculate EVI for an image:
+Thanks to Julia's multiple dispatch, most mathematical operations on EE Types are supported and are dispatched to the correct method based on type. This makes the syntax for developing algorithms that use math more compact and look more like equations. A quick example of this can be seen when calculate EVI for an image and threshold to determine vegetated areas:
 
 ```julia
 img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
@@ -135,17 +135,19 @@ img = EE.Image("LANDSAT/LT05/C01/T1_SR/LT05_034033_20000913")
 b = select(img,"B1")
 r = select(img,"B3")
 n = select(img,"B4")
-# define equation coefficients
-c1 = EE.Image(2.5)
-c2 = EE.Image(6)
-c3 = EE.Image(7.5)
-c4 = EE.Image(1)
 
 # apply evi equation
-evi = c1 * (n - r) / (n + (c2 * r) - (c3 * b) + c4)
+evi = 2.5 * (n - r) / (n + (6 * r) - (7.5 * b) + 1)
+# returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
+
+# get evi values over 0.5
+veg = evi > 0.5
+# returns: EarthEngine.Image(PyObject <ee.image.Image object at ...>)
 ```
 
-It should be noted that when using mathematical arithmetic with EE types, all variables in the equation are required to be an EE type otherwise an error will occur (hence why the coefficients are defined as images above). All [arithmetic operators](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Arithmetic-Operators) and most [bitwise operators](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Bitwise-Operators) are supported.
+These kind of math operators work on all EE types and will dispatch to the equivalent EE operations if they are available for the types. All [arithmetic operators](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Arithmetic-Operators),most [bitwise operators](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Bitwise-Operators), and all [numeric comparisons](https://docs.julialang.org/en/v1/manual/mathematical-operations/#Numeric-Comparisons) are supported.
+
+It should be noted that if using mathematical operations with EE types, then the results will _always_ be evaluated as Earth Engine server-side operations. Comparisons of values, such as `img1 == img2` is equivalent to `eq(img1,img2)` (i.e. server-side operations) and should not be used for client-side comparisons.
 
 ## Quirks
 
@@ -179,11 +181,11 @@ function ndvi(img)
     r = select(img,"B4")
     n = select(img,"B5")
 
-    return divide(subtract(n,r),add(n,r))
+    return (n-r)/(n+r)
 end
 
 # get image collection
-ic = limit(EE.ImageCollection("LANDSAT/LC08/C01/T1_SR"),100)
+ic = limit(EE.ImageCollection("LANDSAT/LC08/C01/T1_SR"),100, "CLOUD_COVER")
 
 # apply function over imagery
 map(ic, ndvi)
@@ -191,24 +193,24 @@ map(ic, ndvi)
 # AttributeError("'Image' object has no attribute 'map'")
 ```
 
-While this is a perfectly valid code to calculate NDVI from the Earth Engine perspective, this throws an error because within the function using `select()` doesn't know when method signature to use so it will use the first one on the list (which probably isn't correct). This ambiguity happens when the function is called via `map()` on the Python side; the inputs are Python Objects and not typed. So, to overcome this ambiguity, one can simply specify the type of the argument initially to ensure the correct information is passed back and forth:
+While this is a perfectly valid code to calculate NDVI from the Earth Engine perspective, this throws an error because within the function using `select()` doesn't know when method signature to use so it will use the first method signature available (which probably isn't the correct one). This ambiguity happens when the function is called via `map()` on the Python side; the inputs are Python Objects and not typed. So, to overcome this ambiguity, we can [provide types to the function arguments](https://docs.julialang.org/en/v1/manual/methods/#Defining-Methods) so that methods within the function know which signature to use. However, this is not enough because the expected type for functions used with map are `PyObject`. To pass the EE types to Python we will use a macro provided by EarthEngine.jl, `@eefunc`, to wrap the typed function which will work on the Python side. The `@eefunc` macro takes a function and the expected EE type to ensure the correct information is passed back and forth between Python and Julia:
 
 ```julia
 # NDVI fucntion with image casted to EE.Image
-function ndvi_typed(img)
-    img = EE.Image(img)
+function ndvi_typed(img::EE.Image)
     r = select(img,"B4")
     n = select(img,"B5")
 
-    return (divide(subtract(n,r),add(n,r)))
+    return (n-r)/(n+r)
 end
 
 # apply new NDVI function with type casting
-map(ic, ndvi_typed)
+# use the @eefunc macro to wrap the type in a Python-friendly function
+map(ic, @eefunc ndvi_typed EE.Image)
 # returns: EarthEngine.ImageCollection(PyObject <ee.imagefeaturecollection.ImageCollection object at ...>)
 ```
 
-Earlier it was mentioned that the type can be specified for the input arguments of functions. While this is true for the Julia side of things, `map()` is called on the Python side which does not have a typing system. The inputs to all mapped functions will be `PyObject` leading to need for users to cast the types within the functions.
+While this is not required all the time for mapping functions over `EE.ImageCollection` or `EE.FeatureCollection`, it is generally good practice to use `@eefunc` to ensure the types are all correct.
 
 ### Using `map()` with `EE.List` types
 
@@ -226,34 +228,40 @@ map(l, foo)
 # TypeError('unsupported callable')
 ```
 
-Again, this is perfectly valid code, but what this means is that the EE Python API cannot understand how to use the function from the Julia side and is throwing an error. To overcome this limitation, a macro `@eefunc` is provided to extract out a Python callable object from functions defined in Julia. Therefore, users will only need to add in minimal code to make the function applicable as in the following example:
+Again, this is perfectly valid code, but what this means is that the EE Python API cannot understand how to use the function from the Julia side and is throwing an error. The `@eefunc` macro is used to overcome this error is provided to extract out a Python callable object from functions defined in Julia. If no type is provided to `@eefunc` it will simply wrap the Julia function on the Python side with no types. Therefore, users will only need to add in minimal code to make the function applicable as in the following example:
 
 ```julia
 map(l, @eefunc foo)
 # returns: EarthEngine.List(PyObject <ee.ee_list.List object at object at ...>)
 ```
 
-However, in more complex functions that [require typing](#Types-within-functions-when-using-map()), there is an known issue where the Julia typing causes friction with how Earth Engine Lists handle functions on the Python side. For example, if we would like to extract date information from an ImageCollection and format the dates to a string we would need to first cast the variable to EE.Date then apply `format()` (this is because `format()` has a signature for both `EE.Number` and `EE.Date`) but this leads to another error:
+However, in more complex functions that [require typing](#Types-within-functions-when-using-map()), the mapped function will need to take `EE.ComputedObject` types (this is the [default type for all `ee.List.map` functions](https://developers.google.com/earth-engine/apidocs/ee-list-map)). For example, if we would like to extract date information from an ImageCollection and format the dates to a string we would need to first cast the variable to `EE.Date` in the function then apply `format()` (this is because `format()` has a signature for both `EE.Number` and `EE.Date`). On the server side Earth Engine lists only take ComputedObjects as the input argument and then we have to cast to the preffered type within the function or else we will get an error. perform whichever operations we would like within the function:
 
 ```julia
-# this function uses the EE Python API
-function bar(date)
-    date = EE.Date(date)
-    return format(date, "YYYY-MM-dd")
+# define function which takes EE.ComputedObject
+function bar(d)
+   d = EE.Date(d)
+   return format(d,"YYYY-MM-dd")
 end
+
+function bar_typed(d::EE.ComputedObject)
+    d = EE.Date(d)
+    return format(d,"YYYY-MM-dd")
+ end
 
 ic = limit(EE.ImageCollection("LANDSAT/LC08/C01/T1_SR"), 10)
 dates = aggregate_array(ic, "system:time_start")
 
+# apply
 map(dates, @eefunc bar)
 # ERROR: (in a Julia function called from Python)
 # JULIA: KeyError: key "format" not found
+
+map(dates, @eefunc bar EE.ComputedObject)
+# returns: EarthEngine.List(PyObject <ee.ee_list.List object at ...>)
 ```
 
-To overcome this problem, one would need to either 1) write the function using the [EE Python API through Julia](#Using-the-Python-API-through-Julia) and apply it normally with `map()` or 2) simply avoid using Lists altogether (in fact it is recommended to [avoid converting Earth Engine data to lists](https://developers.google.com/earth-engine/guides/best_practices#avoid-converting-to-list-unnecessarily)).
-
-In summary, to map a function over an Earth Engine List one would need to supply the `@eefunc` macro in front of the function to convert it into a Python function. Furthermore, if complex processing is required on lists, it is recommended to try avoiding lists or use the EE Python API through Julia.
-
+In short, if using `map()` with `EE.List` types you will need to use `@eefunc` macro to wrap the function and the only support type as input into functions for `EE.List` is `EE.ComputedObject`. If this is all too much, one can simply avoid using Lists altogether and do all of the processing with `EE.Colletion` types (in fact it is recommended to [avoid converting Earth Engine data to lists](https://developers.google.com/earth-engine/guides/best_practices#avoid-converting-to-list-unnecessarily)).
 
 There are more likely than not more quirks in using the EE API this way, these are some that have been found so far. If there is a question or some unexpected behavior please file an [issue on the GitHub repo](https://github.com/KMarkert/EarthEngine.jl/issues)
 
