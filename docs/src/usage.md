@@ -238,25 +238,28 @@ map(l, @eefunc foo)
 However, in more complex functions that [require typing](#Types-within-functions-when-using-map()), the mapped function will need to take `EE.ComputedObject` types (this is the [default type for all `ee.List.map` functions](https://developers.google.com/earth-engine/apidocs/ee-list-map)). For example, if we would like to extract date information from an ImageCollection and format the dates to a string we would need to first cast the variable to `EE.Date` in the function then apply `format()` (this is because `format()` has a signature for both `EE.Number` and `EE.Date`). On the server side Earth Engine lists only take ComputedObjects as the input argument and then we have to cast to the preffered type within the function or else we will get an error. perform whichever operations we would like within the function:
 
 ```julia
-# define function which takes EE.ComputedObject
+# define function to convert ee date object to string
 function bar(d)
    d = EE.Date(d)
    return format(d,"YYYY-MM-dd")
 end
 
+# define the function which takes EE.ComputedObject
 function bar_typed(d::EE.ComputedObject)
     d = EE.Date(d)
     return format(d,"YYYY-MM-dd")
  end
 
+# get a list of EE Dates
 ic = limit(EE.ImageCollection("LANDSAT/LC08/C01/T1_SR"), 10)
 dates = aggregate_array(ic, "system:time_start")
 
-# apply
+# apply basic function...will get an error
 map(dates, @eefunc bar)
 # ERROR: (in a Julia function called from Python)
 # JULIA: KeyError: key "format" not found
 
+# apply function typed with EE.ComputedObject
 map(dates, @eefunc bar EE.ComputedObject)
 # returns: EarthEngine.List(PyObject <ee.ee_list.List object at ...>)
 ```
