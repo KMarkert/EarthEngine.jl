@@ -56,6 +56,8 @@ modules = [
 
 mod_methods = OrderedDict()
 
+excludefuncs = ["product","cat"]
+
 # loop over the modules
 for mod in modules
     # get the module functions and add to dict
@@ -65,7 +67,7 @@ for mod in modules
     for submethod in submethods
         submethod = convert(AbstractString, submethod)
         # check if submethod is not private
-        if ~startswith(submethod, "_")
+        if ~startswith(submethod, "_") & ~(submethod in excludefuncs)
             m = Symbol(submethod)
             # create a julia function of the public methods
             @eval begin
