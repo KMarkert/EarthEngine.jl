@@ -4,6 +4,8 @@ authors = ["kmarkert <kel.markert@gmail.com>"]
 version = "0.3.2"
 
 [deps]
+BinDeps = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
+CondaBinDeps = "a9693cdc-2bc8-5703-a9cd-1da358117377"
 Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
 OrderedCollections = "bac558e1-5e72-5ebc-8fee-abe8a469f55d"
 PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
